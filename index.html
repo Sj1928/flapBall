@@ -1,0 +1,102 @@
+<html lang="en">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+<body>
+    <!-- // <h1 id="name">Stark</h1> -->
+    <img src="assets/ball.png" id="ball">
+    <canvas width="600" height="450" id="canvasBox"></canvas>
+</body>
+
+<script>
+   async function main() {
+    const birdImg = new Image();
+    birdImg.src = "assets/ball.png"; 
+
+    console.log("run");
+    const canvas = document.getElementById("canvasBox");
+    const ctx = canvas.getContext("2d");
+
+    // Bird physics
+    let y = 0;
+    let gravity = 9.8;
+    let yVelocity = 0;
+
+    // Tower settings
+    const canvasHeight = 450;
+    const gap = 150;
+    const spacing = 200;
+    const towerWidth = 50;
+    const towerSpeed = 2;
+
+    // Initialize towers
+    const towers = Array.from({ length: 3 }, (_, i) => {
+        const topHeight = Math.floor(Math.random() * (canvasHeight - gap));
+        const bottomHeight = canvasHeight - gap - topHeight;
+        return {
+            x: 400 + i * spacing,
+            topHeight,
+            bottomHeight
+        };
+    });
+
+    // Flap on key press
+    document.onkeydown = () => {
+        yVelocity = -35;
+    };
+
+    // Game loop
+    for (let i = 0; i < 1000000; i++) {
+        yVelocity += 0.33 * gravity;
+        y += yVelocity * 0.33;
+
+        ctx.clearRect(0, 0, canvas.width, canvasHeight);
+
+        // Draw bird
+        ctx.drawImage(birdImg, 60, y, 50, 50);
+
+        // Update and draw towers
+        for (const t of towers) {
+            t.x -= towerSpeed;
+
+            // Recycle tower
+            if (t.x < -towerWidth) {
+                t.x = canvas.width;
+                t.topHeight = Math.floor(Math.random() * (canvasHeight - gap));
+                t.bottomHeight = canvasHeight - gap - t.topHeight;
+            }
+
+            ctx.fillStyle = "red";
+            ctx.fillRect(t.x, 0, towerWidth, t.topHeight); // Top tower
+            ctx.fillRect(t.x, canvasHeight - t.bottomHeight, towerWidth, t.bottomHeight); // Bottom tower
+        }
+
+        await new Promise(r => setTimeout(r, 30));
+    }
+}
+main();
+
+              
+
+
+
+// let bird = document.getElementById("ball");
+// let position = 10;       // Start at 10%
+// let direction = 1;       // 1 = down, -1 = up
+// let speed = 0.5;         // Adjust for faster/slower movement
+
+// setInterval(() => 
+//     position += direction * speed;
+
+//     if (position >= 70) {
+//         position = 70;
+//         direction = -1; // bounce up
+//     } else if (position <= 10) {
+//         position = 10;
+//         direction = 1; // bounce down
+//     }
+
+//     bird.style.top = position + "%";
+// }, 10); // smoother animation
+
+</script>
+</html>
