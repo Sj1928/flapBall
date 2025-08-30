@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="style.css">
 <body>
     <!-- // <h1 id="name">Stark</h1> -->
-    <img src="assets/ball.png" id="ball">
+    <!-- <img src="assets/ball.png" id="ball"> -->
     <canvas width="600" height="450" id="canvasBox"></canvas>
 </body>
 
@@ -65,7 +65,7 @@
                 t.bottomHeight = canvasHeight - gap - t.topHeight;
             }
 
-            ctx.fillStyle = "red";
+            ctx.fillStyle = "white";
             ctx.fillRect(t.x, 0, towerWidth, t.topHeight); // Top tower
             ctx.fillRect(t.x, canvasHeight - t.bottomHeight, towerWidth, t.bottomHeight); // Bottom tower
         }
