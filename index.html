@@ -5,7 +5,18 @@
 <body>
     <!-- // <h1 id="name">Stark</h1> -->
     <!-- <img src="assets/ball.png" id="ball"> -->
-    <canvas width="600" height="450" id="canvasBox"></canvas>
+     <div id="gameContainer">
+
+         <div id="scorePanel">
+             <div id="scoreBoard">Score: 0</div>
+             <div id="highScoreBoard">High Score: 0</div>
+            </div>
+            <canvas width="600" height="450" id="canvasBox"></canvas>
+            <button id="resetButton">Reset</button>
+
+    </div>
+
+    
 </body>
 
 <script>
@@ -17,8 +28,8 @@ async function main() {
     const bgImage = new Image();
     bgImage.src = "assets/bg4.png"; // Replace with your image path
     
-        const ball = new Image();
-        ball.src = "assets/ball.png"; 
+    const ball = new Image();
+    ball.src = "assets/ball.png"; 
 
     // Wait for image to load before drawing
     await Promise.all([
@@ -26,21 +37,23 @@ async function main() {
         new Promise(resolve => ball.onload = resolve)
     ]);
 
-
-
-
+    
+    
+    
+    
+    
     // ball physics
     let y = 0;
     let gravity = 9.8;
     let yVelocity = 0;
-
+    
     // Tower settings
     const canvasHeight = 450;
     const gap = 150;
     const spacing = 200;
     const towerWidth = 50;
     const towerSpeed = 2;
-
+    
     // Initialize towers
     const towers = Array.from({ length: 3 }, (_, i) => {
         const topHeight = Math.floor(Math.random() * (canvasHeight - gap));
@@ -51,29 +64,45 @@ async function main() {
             bottomHeight
         };
     });
-
+    
     // jump on key press
     document.onkeydown = () => {
         yVelocity = -35;
     };
     
-
+    //jump on touch
     document.addEventListener("touchstart", () => {
-         yVelocity = -35;  
-        });
+        yVelocity = -35;  
+    });
+    
+    
+    let score = 0;
+    let highScore = localStorage.getItem("highScore") || 0;
+    const scoreBoard = document.getElementById("scoreBoard");
+    function updateScore(amount = 1) {
+    score += amount;
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+    }
+    scoreBoard.textContent = `Score: ${score}`;
+    document.getElementById("highScoreBoard").textContent = `High Score: ${highScore}`;
+    }
+
 
     function Reset() {
-    // Reset ball position and velocity
     y = 0;
     yVelocity = 0;
+    score = 0;
+    scoreBoard.textContent = `Score: ${score}`;
+    document.getElementById("highScoreBoard").textContent = `High Score: ${highScore}`;
 
-    // Reset tower positions and heights
     towers.forEach((t, i) => {
         t.x = 400 + i * spacing;
         t.topHeight = Math.floor(Math.random() * (canvasHeight - gap));
         t.bottomHeight = canvasHeight - gap - t.topHeight;
     });
-}
+    }
 
     // Game loop
     for (let i = 0; i < 1000000; i++) {
@@ -115,6 +144,7 @@ async function main() {
                 t.x = canvas.width;
                 t.topHeight = Math.floor(Math.random() * (canvasHeight - gap));
                 t.bottomHeight = canvasHeight - gap - t.topHeight;
+                updateScore();
             }
 
             // Set shadow for tiles and slabs
@@ -195,12 +225,16 @@ async function main() {
             await new Promise(r => setTimeout(r, 500)); // wait 0.5s
             Reset();
         }
+        document.getElementById("resetButton").addEventListener("click", () => {
+        Reset();
+            });
 
         await new Promise(r => setTimeout(r, 30));
 
     }
+
 }
-main();
+    main();
 
               
 
