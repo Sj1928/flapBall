@@ -1,6 +1,7 @@
 <html lang="en">
-    <title>Document</title>
+    <title>flapBall</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
 <body>
     <!-- // <h1 id="name">Stark</h1> -->
     <!-- <img src="assets/ball.png" id="ball"> -->
@@ -8,15 +9,27 @@
 </body>
 
 <script>
-   async function main() {
-    const birdImg = new Image();
-    birdImg.src = "assets/ball.png"; 
-
+async function main() {
     console.log("run");
     const canvas = document.getElementById("canvasBox");
     const ctx = canvas.getContext("2d");
 
-    // Bird physics
+    const bgImage = new Image();
+    bgImage.src = "assets/bg4.png"; // Replace with your image path
+    
+        const ball = new Image();
+        ball.src = "assets/ball.png"; 
+
+    // Wait for image to load before drawing
+    await Promise.all([
+        new Promise(resolve => bgImage.onload = resolve),
+        new Promise(resolve => ball.onload = resolve)
+    ]);
+
+
+
+
+    // ball physics
     let y = 0;
     let gravity = 9.8;
     let yVelocity = 0;
@@ -39,20 +52,59 @@
         };
     });
 
-    // Flap on key press
+    // jump on key press
     document.onkeydown = () => {
         yVelocity = -35;
     };
+    
+
+    document.addEventListener("touchstart", () => {
+         yVelocity = -35;  
+        });
+
+    function Reset() {
+    // Reset ball position and velocity
+    y = 0;
+    yVelocity = 0;
+
+    // Reset tower positions and heights
+    towers.forEach((t, i) => {
+        t.x = 400 + i * spacing;
+        t.topHeight = Math.floor(Math.random() * (canvasHeight - gap));
+        t.bottomHeight = canvasHeight - gap - t.topHeight;
+    });
+}
 
     // Game loop
     for (let i = 0; i < 1000000; i++) {
         yVelocity += 0.33 * gravity;
         y += yVelocity * 0.33;
 
+        //load ball
         ctx.clearRect(0, 0, canvas.width, canvasHeight);
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw bird
-        ctx.drawImage(birdImg, 60, y, 50, 50);
+
+
+        // Draw ball
+        ctx.drawImage(ball, 60, y, 50, 50);
+
+        let ballX = 60;
+        let ballY = y;
+        let ballW = 44;
+        let ballH = 44;
+
+        let ballLeft = ballX;
+        let ballRight = ballX + ballW;
+        let ballTop = ballY;
+        let ballBottom = ballY + ballH;
+
+        let collisionDetected = false;
+
+
+
+
+        
 
         // Update and draw towers
         for (const t of towers) {
@@ -65,12 +117,87 @@
                 t.bottomHeight = canvasHeight - gap - t.topHeight;
             }
 
-            ctx.fillStyle = "white";
-            ctx.fillRect(t.x, 0, towerWidth, t.topHeight); // Top tower
-            ctx.fillRect(t.x, canvasHeight - t.bottomHeight, towerWidth, t.bottomHeight); // Bottom tower
+            // Set shadow for tiles and slabs
+            ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+            ctx.shadowBlur = 9;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 3;
+
+            // Draw top tower as stacked tiles
+            let tileHeight = 20;
+            for (let yPos = 0; yPos < t.topHeight; yPos += tileHeight) {
+                ctx.fillStyle = "#d0e7f9";
+                ctx.fillRect(t.x, yPos, towerWidth, tileHeight);
+                ctx.strokeStyle = "#a3cde3";
+                ctx.strokeRect(t.x, yPos, towerWidth, tileHeight);
+            }
+
+            // Sleek slabs on top
+            ctx.fillStyle = "#6fa3bf";
+            ctx.fillRect(t.x - 5, t.topHeight - 5, towerWidth + 10, 10);
+            ctx.fillRect(t.x - 3, t.topHeight - 15, towerWidth + 6, 6);
+
+            // Draw bottom tower as stacked tiles
+            for (let yPos = canvasHeight - t.bottomHeight; yPos < canvasHeight; yPos += tileHeight) {
+                ctx.fillStyle = "#d0e7f9";
+                ctx.fillRect(t.x, yPos, towerWidth, tileHeight);
+                ctx.strokeStyle = "#a3cde3";
+                ctx.strokeRect(t.x, yPos, towerWidth, tileHeight);
+            }
+
+            // Sleek slabs on bottom
+            ctx.fillStyle = "#6fa3bf";
+            ctx.fillRect(t.x - 5, canvasHeight - t.bottomHeight, towerWidth + 10, 10);
+            ctx.fillRect(t.x - 3, canvasHeight - t.bottomHeight + 10, towerWidth + 6, 6);
+
+            // Reset shadow after drawing
+            ctx.shadowColor = "transparent";
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            
+            // top tower box
+            let topLeft = t.x;
+            let topRight = t.x + towerWidth;
+            let topTop = 0;
+            let topBottom = t.topHeight;
+
+            // bottom tower box
+            let bottomLeft = t.x;
+            let bottomRight = t.x + towerWidth;
+            let bottomTop = canvasHeight - t.bottomHeight;
+            let bottomBottom = canvasHeight;
+
+            function isColliding(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
+                return (
+                    ax1 < bx2 &&
+                    ax2 > bx1 &&
+                    ay1 < by2 &&
+                    ay2 > by1
+                );
+            }
+
+            if (
+                isColliding(ballLeft, ballTop, ballRight, ballBottom, topLeft, topTop, topRight, topBottom) ||
+                isColliding(ballLeft, ballTop, ballRight, ballBottom, bottomLeft, bottomTop, bottomRight, bottomBottom)
+            ) {
+                collisionDetected = true;
+            }
+        }
+
+        // for top and bottom of frame
+        if (y < 0 || y + ballH > canvasHeight) {
+            collisionDetected = true;
+        }
+
+        if (collisionDetected) {
+            await new Promise(r => setTimeout(r, 500)); // wait 0.5s
+            Reset();
         }
 
         await new Promise(r => setTimeout(r, 30));
+
     }
 }
 main();
