@@ -44,10 +44,11 @@ body {
   width: 90vw;         /* 90% of viewport width */
   max-width: 600px;    /* cap it for desktop */
   height: auto;
-  background: coral;
+  background: rgb(255, 118, 68);
   border: 2px solid white;
   border-radius: 20px;
 }
+
 
 /* Reset button */
 #resetButton {
