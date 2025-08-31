@@ -1,31 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-body{
+/* Base styles */
+body {
   background: rgb(0, 0, 0);
   display: flex;
-  justify-content: center;  /* centers horizontally */
-  align-items: center;      /* centers vertically */
-  width: 100%;
-  height: 100%;           /* full viewport height */
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden; 
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
 }
 
+/* Container layout */
 #gameContainer {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
+/* Score panel */
 #scorePanel {
+  display: flex;
   flex-direction: column;
-  margin-left: 150px;
-  padding: 1px;
-  margin-right: 150px;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 18px;
+  align-items: center;
   color: #fff;
+  font-size: 18px;
+  margin: 0 20px;
 }
 
 #scoreBoard,
@@ -33,34 +39,23 @@ body{
   margin-bottom: 10px;
 }
 
-#canvasBox{
-  background: coral;
-  border: 2px solid rgb(255, 255, 255);
-  border-radius: 20px;
-  top: 20%;
-  left: 5%;
-}
-
-#name{
-    color: aqua;
-}
-
-#ball {
-  width: 150px;
+/* Canvas styling */
+#canvasBox {
+  width: 90vw;         /* 90% of viewport width */
+  max-width: 600px;    /* cap it for desktop */
   height: auto;
-  display: block;
-  position: absolute; 
-  top: 20%;
-  left: 5%;
- 
+  background: coral;
+  border: 2px solid white;
+  border-radius: 20px;
 }
 
+/* Reset button */
 #resetButton {
-  margin: 200px;
+  margin-top: 40px;
   padding: 10px 20px;
-  font-family: 'Press Start 2P', cursive;
   font-size: 24px;
   color: #fff;
+  font-family: 'Press Start 2P', cursive;
   background-color: #00bcd4;
   border: none;
   border-radius: 8px;
@@ -72,3 +67,42 @@ body{
   background-color: #0097a7;
 }
 
+/* Optional name styling */
+#name {
+  color: aqua;
+}
+
+/* Ball styling (if used) */
+#ball {
+  width: 150px;
+  height: auto;
+  display: block;
+  position: absolute;
+  top: 20%;
+  left: 5%;
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  #gameContainer {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+  }
+
+  #scorePanel {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  #canvasBox {
+    margin: 20px 0;
+  }
+
+  #resetButton {
+    margin-bottom: 20px;
+  }
+}
