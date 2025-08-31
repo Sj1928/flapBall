@@ -9,12 +9,6 @@ body{
   margin: 0;  
 }
 
-#highScoreBoard {
-    float: right;
-    margin-right: 20px;
-    font-weight: bold;
-}
-
 #gameContainer {
   display: flex;
   align-items: center;
@@ -23,9 +17,9 @@ body{
 
 #scorePanel {
   flex-direction: column;
-  margin-left: 100px;
+  margin-left: 150px;
   padding: 1px;
-  margin-right: 200px;
+  margin-right: 150px;
   font-family: 'Press Start 2P', cursive;
   font-size: 18px;
   color: #fff;
